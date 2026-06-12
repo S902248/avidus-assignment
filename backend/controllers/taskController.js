@@ -84,9 +84,9 @@ const deleteTask = async (req, res) => {
 
     logActivity(req.user._id, 'TASK_DELETED', `Task deleted: "${taskTitle}"`);
 
-    res.status(200).json({ message: 'Task deleted successfully' });
+    res.status(200).json({ message: 'Task deleteeeddd successfully' });
   } catch (error) {
-    console.error('[DeleteTask Error]:', error.message);
+    console.error('[DeleteTask Errors]:', error.message);
     res.status(500).json({ message: 'Server error deleting task' });
   }
 };
