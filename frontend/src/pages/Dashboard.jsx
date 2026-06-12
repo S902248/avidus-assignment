@@ -93,7 +93,7 @@ const Dashboard = () => {
     <div className={`app-layout user-light-theme ${collapsed ? 'app-layout--collapsed' : ''}`}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="main-content">
-        <Navbar pageTitle="Dashboard" />
+        <Navbar pageTitle="Dashboard" collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="page-body">
           {error && <div className="alert alert--error">{error}</div>}
           {success && <div className="alert alert--success">{success}</div>}
@@ -110,7 +110,7 @@ const Dashboard = () => {
             ))}
           </div>
 
-          <div className="dash-mid-row" style={{ gridTemplateColumns: '2fr 1fr' }}>
+          <div className="dash-mid-row">
             {/* Left Column: Task List */}
             <div className="dash-panel">
               <div className="dash-panel-header">

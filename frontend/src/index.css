@@ -1382,6 +1382,31 @@ body {
     --sidebar-width: 240px;
   }
 
+  .sidebar {
+    position: fixed;
+    z-index: 999;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar--collapsed {
+    transform: translateX(-100%);
+    width: var(--sidebar-width) !important;
+  }
+
+  .sidebar:not(.sidebar--collapsed) {
+    transform: translateX(0);
+    width: var(--sidebar-width);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .app-layout--collapsed .main-content {
+    margin-left: 0 !important;
+  }
+
   .page-body {
     padding: 1rem;
   }
@@ -1410,6 +1435,10 @@ body {
   .data-table th,
   .data-table td {
     padding: 0.625rem 0.875rem;
+  }
+
+  .mobile-menu-btn {
+    display: block !important;
   }
 }
 

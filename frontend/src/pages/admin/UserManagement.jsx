@@ -95,7 +95,7 @@ const UserManagement = () => {
     <div className={`app-layout ${collapsed ? 'app-layout--collapsed' : ''}`}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="main-content">
-        <Navbar pageTitle="User Management" />
+        <Navbar pageTitle="User Management" collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="page-body">
           {error && <div className="alert alert--error">{error}</div>}
           {success && <div className="alert alert--success">{success}</div>}
