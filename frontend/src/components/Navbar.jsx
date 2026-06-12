@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 
-const Navbar = ({ pageTitle }) => {
+const Navbar = ({ pageTitle, collapsed, setCollapsed }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showToast, setShowToast] = useState(false);
@@ -72,7 +72,16 @@ const Navbar = ({ pageTitle }) => {
         </div>
       )}
       <header className="navbar">
-        <div className="navbar__left">
+        <div className="navbar__left" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {setCollapsed && (
+            <button 
+              className="mobile-menu-btn" 
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'none', padding: '0.5rem' }}
+            >
+              <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+          )}
           <div className="navbar__title-group">
             <h1 className="navbar__title">{pageTitle}</h1>
             <span className="navbar__date">{currentDate}</span>

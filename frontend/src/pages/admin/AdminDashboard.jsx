@@ -44,7 +44,7 @@ const AdminDashboard = () => {
     <div className={`app-layout ${collapsed ? 'app-layout--collapsed' : ''}`}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="main-content">
-        <Navbar pageTitle="Admin Dashboard" />
+        <Navbar pageTitle="Admin Dashboard" collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="page-body">
           {loading ? (
             <div className="loading-center"><div className="spinner"></div></div>
