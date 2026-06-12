@@ -12,7 +12,7 @@ const Navbar = ({ pageTitle }) => {
   useEffect(() => {
     // Connect to socket if the user is an Admin
     if (user?.role === 'Admin') {
-      const socket = io('http://localhost:5000');
+      const socket = io('https://avidus-assignment-0mnw.onrender.com');
       
       socket.on('connect', () => {
         socket.emit('join_admin');
