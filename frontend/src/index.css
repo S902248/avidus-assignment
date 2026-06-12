@@ -5,18 +5,18 @@
    CSS CUSTOM PROPERTIES (DESIGN TOKENS)
    ============================================= */
 :root {
-  /* Colors - Dark theme */
-  --bg-primary: #121212;
-  --bg-secondary: #1e1e1e;
-  --bg-tertiary: #2a2a2a;
-  --bg-card: #252525;
-  --bg-card-hover: #2d2d2d;
-  --bg-input: #1e1e1e;
+  /* Colors - Light theme */
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --bg-input: #ffffff;
 
   /* Accent Colors */
-  --accent-purple: #7c3aed;
-  --accent-purple-light: #8b5cf6;
-  --accent-purple-glow: rgba(124, 58, 237, 0.3);
+  --accent-purple: #ef4444; /* Repurposed to red to match screenshot */
+  --accent-purple-light: #f87171;
+  --accent-purple-glow: rgba(239, 68, 68, 0.1);
   --accent-blue: #3b82f6;
   --accent-blue-light: #60a5fa;
   --accent-green: #10b981;
@@ -27,23 +27,23 @@
   --accent-red-light: #f87171;
 
   /* Text */
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
 
   /* Borders */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-color-hover: rgba(255, 255, 255, 0.15);
+  --border-color: #f3f4f6;
+  --border-color-hover: #e5e7eb;
 
   /* Sidebar */
   --sidebar-width: 260px;
   --sidebar-collapsed-width: 72px;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-purple: 0 0 20px rgba(124, 58, 237, 0.25);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  --shadow-purple: 0 0 20px rgba(239, 68, 68, 0.15); /* Replaced purple with red */
 
   /* Transitions */
   --transition-fast: 0.15s ease;
@@ -664,20 +664,20 @@ body {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.65rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border: 1px solid #ef4444;
+  border-radius: 24px;
   background: transparent;
-  color: var(--text-secondary);
+  color: #ef4444;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-fast);
   width: 100%;
 }
 .sidebar__logout-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--accent-red-light);
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #dc2626;
 }
 
 /* =============================================
