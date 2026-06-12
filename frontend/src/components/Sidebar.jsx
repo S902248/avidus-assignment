@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -9,6 +10,12 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
     logout();
     navigate('/login');
   };
+
+  useEffect(() => {
+    if (window.innerWidth <= 768) {
+      setCollapsed(true);
+    }
+  }, [setCollapsed]);
 
   return (
     <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>

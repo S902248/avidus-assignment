@@ -46,7 +46,7 @@ const ActivityLogs = () => {
     <div className={`app-layout ${collapsed ? 'app-layout--collapsed' : ''}`}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="main-content">
-        <Navbar pageTitle="Activity Logs" />
+        <Navbar pageTitle="Activity Logs" collapsed={collapsed} setCollapsed={setCollapsed} />
         <div className="page-body">
           <div className="card">
             <div className="card__header">
