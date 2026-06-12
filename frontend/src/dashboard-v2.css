@@ -337,4 +337,7 @@
   .quick-stats-grid {
     grid-template-columns: 1fr;
   }
+  .dash-panel {
+    padding: 1.25rem 1rem;
+  }
 }
