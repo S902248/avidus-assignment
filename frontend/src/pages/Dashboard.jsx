@@ -79,49 +79,136 @@ const Dashboard = () => {
 
   const pendingCount = tasks.filter((t) => t.status === 'pending').length;
   const completedCount = tasks.filter((t) => t.status === 'completed').length;
+  const totalTasks = tasks.length;
+  const completionRate = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
+
+  const statCards = [
+    { label: 'Total Tasks', value: totalTasks, subtext: 'All your tasks', icon: '📋', color: 'purple' },
+    { label: 'Pending', value: pendingCount, subtext: 'Needs attention', icon: '⏳', color: 'yellow' },
+    { label: 'Completed', value: completedCount, subtext: 'Done', icon: '✅', color: 'green' },
+    { label: 'Completion Rate', value: `${completionRate}%`, subtext: 'Overall progress', icon: '📈', color: 'blue' }
+  ];
 
   return (
-    <div className={`app-layout ${collapsed ? 'app-layout--collapsed' : ''}`}>
+    <div className={`app-layout user-light-theme ${collapsed ? 'app-layout--collapsed' : ''}`}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <div className="main-content">
-        <Navbar pageTitle="My Tasks" />
+        <Navbar pageTitle="Dashboard" />
         <div className="page-body">
           {error && <div className="alert alert--error">{error}</div>}
           {success && <div className="alert alert--success">{success}</div>}
 
           {/* Stats Row */}
-          <div className="stats-row">
-            <div className="stat-card">
-              <div className="stat-card__icon stat-card__icon--blue">📋</div>
-              <div className="stat-card__info">
-                <span className="stat-card__value">{tasks.length}</span>
-                <span className="stat-card__label">Total Tasks</span>
+          <div className="dash-top-row">
+            {statCards.map(card => (
+              <div key={card.label} className={`v-stat-card card-${card.color}`}>
+                <div className="v-stat-icon-wrapper">{card.icon}</div>
+                <div className="v-stat-value">{card.value}</div>
+                <div className="v-stat-label">{card.label}</div>
+                <div className="v-stat-subtext">{card.subtext}</div>
               </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-card__icon stat-card__icon--yellow">⏳</div>
-              <div className="stat-card__info">
-                <span className="stat-card__value">{pendingCount}</span>
-                <span className="stat-card__label">Pending</span>
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-card__icon stat-card__icon--green">✅</div>
-              <div className="stat-card__info">
-                <span className="stat-card__value">{completedCount}</span>
-                <span className="stat-card__label">Completed</span>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Create Task Form */}
-          <div className="card">
-            <div className="card__header">
-              <h2 className="card__title">Create New Task</h2>
+          <div className="dash-mid-row" style={{ gridTemplateColumns: '2fr 1fr' }}>
+            {/* Left Column: Task List */}
+            <div className="dash-panel">
+              <div className="dash-panel-header">
+                <span className="dash-panel-title">My Task List</span>
+                <span className="badge">{tasks.length} tasks</span>
+              </div>
+              
+              {loading ? (
+                <div className="loading-center"><div className="spinner"></div></div>
+              ) : tasks.length === 0 ? (
+                <div className="empty-state">
+                  <span className="empty-state__icon">📭</span>
+                  <p>No tasks yet. Create your first task!</p>
+                </div>
+              ) : (
+                <div className="table-wrapper">
+                  <table className="data-table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Task Name</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tasks.map((task, idx) => (
+                        <tr key={task._id}>
+                          {editingTask === task._id ? (
+                            <td colSpan="5">
+                              <div className="task-item__edit" style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                                <input
+                                  type="text"
+                                  className="form-input"
+                                  style={{ flex: 1 }}
+                                  value={editForm.title}
+                                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                                  placeholder="Task title"
+                                />
+                                <input
+                                  type="text"
+                                  className="form-input"
+                                  style={{ flex: 1 }}
+                                  value={editForm.description}
+                                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                                  placeholder="Description"
+                                />
+                                <select
+                                  className="form-input form-select"
+                                  value={editForm.status}
+                                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                                >
+                                  <option value="pending">Pending</option>
+                                  <option value="completed">Completed</option>
+                                </select>
+                                <div className="task-item__edit-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                                  <button className="btn btn--success btn--sm" onClick={() => handleUpdate(task._id)}>Save</button>
+                                  <button className="btn btn--ghost btn--sm" onClick={() => setEditingTask(null)}>Cancel</button>
+                                </div>
+                              </div>
+                            </td>
+                          ) : (
+                            <>
+                              <td className="table-cell--muted">{idx + 1}</td>
+                              <td>
+                                <div style={{ fontWeight: 600, color: '#fff' }}>{task.title}</div>
+                                {task.description && <div style={{ fontSize: '0.8rem', color: '#a0aec0', marginTop: '0.25rem' }}>{task.description}</div>}
+                              </td>
+                              <td>
+                                <span className={`status-badge status-badge--${task.status}`}>{task.status}</span>
+                              </td>
+                              <td className="table-cell--muted">
+                                {new Date(task.createdAt).toLocaleDateString()}
+                              </td>
+                              <td>
+                                <div className="table-actions" style={{ display: 'flex', gap: '0.5rem' }}>
+                                  <button className="btn btn--ghost btn--sm" onClick={() => handleEdit(task)}>✏️ Edit</button>
+                                  <button className="btn btn--danger btn--sm" onClick={() => handleDelete(task._id)}>🗑️ Delete</button>
+                                </div>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
-            <form className="task-form" onSubmit={handleCreate}>
-              <div className="task-form__row">
-                <div className="form-group form-group--flex">
+
+            {/* Right Column: Create Task Form */}
+            <div className="dash-panel">
+              <div className="dash-panel-header">
+                <span className="dash-panel-title">Create New Task</span>
+              </div>
+              <form className="task-form" onSubmit={handleCreate}>
+                <div className="form-group">
                   <label className="form-label" htmlFor="task-title">Task Title</label>
                   <input
                     id="task-title"
@@ -133,95 +220,23 @@ const Dashboard = () => {
                     required
                   />
                 </div>
-                <div className="form-group form-group--flex">
+                <div className="form-group" style={{ marginTop: '1rem' }}>
                   <label className="form-label" htmlFor="task-desc">Description</label>
-                  <input
+                  <textarea
                     id="task-desc"
-                    type="text"
                     className="form-input"
                     placeholder="Optional description..."
+                    rows="3"
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    style={{ resize: 'vertical' }}
                   />
                 </div>
-                <button type="submit" className="btn btn--primary" disabled={submitting}>
+                <button type="submit" className="btn btn--primary" disabled={submitting} style={{ width: '100%', marginTop: '1.5rem' }}>
                   {submitting ? <span className="btn-spinner"></span> : '+ Add Task'}
                 </button>
-              </div>
-            </form>
-          </div>
-
-          {/* Task List */}
-          <div className="card">
-            <div className="card__header">
-              <h2 className="card__title">My Task List</h2>
-              <span className="badge">{tasks.length} tasks</span>
+              </form>
             </div>
-            {loading ? (
-              <div className="loading-center"><div className="spinner"></div></div>
-            ) : tasks.length === 0 ? (
-              <div className="empty-state">
-                <span className="empty-state__icon">📭</span>
-                <p>No tasks yet. Create your first task above!</p>
-              </div>
-            ) : (
-              <div className="task-list">
-                {tasks.map((task) => (
-                  <div key={task._id} className={`task-item task-item--${task.status}`}>
-                    {editingTask === task._id ? (
-                      <div className="task-item__edit">
-                        <input
-                          type="text"
-                          className="form-input"
-                          value={editForm.title}
-                          onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
-                          placeholder="Task title"
-                        />
-                        <input
-                          type="text"
-                          className="form-input"
-                          value={editForm.description}
-                          onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                          placeholder="Description"
-                        />
-                        <select
-                          className="form-input form-select"
-                          value={editForm.status}
-                          onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="completed">Completed</option>
-                        </select>
-                        <div className="task-item__edit-actions">
-                          <button className="btn btn--success btn--sm" onClick={() => handleUpdate(task._id)}>Save</button>
-                          <button className="btn btn--ghost btn--sm" onClick={() => setEditingTask(null)}>Cancel</button>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="task-item__left">
-                          <span className={`task-status-dot task-status-dot--${task.status}`}></span>
-                          <div className="task-item__info">
-                            <h3 className="task-item__title">{task.title}</h3>
-                            {task.description && <p className="task-item__desc">{task.description}</p>}
-                            <div className="task-item__meta">
-                              <span className={`status-badge status-badge--${task.status}`}>{task.status}</span>
-                              <span className="task-item__date">
-                                {new Date(task.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="task-item__actions">
-                          <button className="btn btn--ghost btn--sm" onClick={() => handleEdit(task)}>✏️ Edit</button>
-                          <button className="btn btn--danger btn--sm" onClick={() => handleDelete(task._id)}>🗑️ Delete</button>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
