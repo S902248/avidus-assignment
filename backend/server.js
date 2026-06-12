@@ -39,6 +39,9 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Internal server error' });
 });
 
+const http = require('http');
+const socket = require('./utils/socket');
+
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
@@ -47,7 +50,26 @@ mongoose
   .connect(MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected successfully');
-    app.listen(PORT, () => {
+    
+    // Create HTTP server and initialize socket.io
+    const server = http.createServer(app);
+    const io = socket.init(server);
+    
+    io.on('connection', (socketClient) => {
+      console.log(`[Socket] Client connected: ${socketClient.id}`);
+      
+      // Clients identifying as admin join the admin room
+      socketClient.on('join_admin', () => {
+        socketClient.join('admin_room');
+        console.log(`[Socket] Client ${socketClient.id} joined admin_room`);
+      });
+
+      socketClient.on('disconnect', () => {
+        console.log(`[Socket] Client disconnected: ${socketClient.id}`);
+      });
+    });
+
+    server.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   })
