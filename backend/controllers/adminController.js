@@ -126,6 +126,69 @@ const getAnalytics = async (req, res) => {
   }
 };
 
+// @desc    Create a new user
+// @route   POST /api/admin/users
+// @access  Admin
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: 'Please provide name, email and password' });
+    }
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists with this email' });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+      role: role || 'User',
+    });
+
+    res.status(201).json({
+      message: 'User created successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error creating user' });
+  }
+};
+
+// @desc    Update user password
+// @route   PATCH /api/admin/users/:id/password
+// @access  Admin
+const updateUserPassword = async (req, res) => {
+  try {
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.password = password;
+    await user.save(); // This will trigger the pre-save hook to hash the new password
+
+    res.status(200).json({ message: 'User password updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error updating password' });
+  }
+};
+
 module.exports = {
   getAllUsers,
   deleteUser,
@@ -134,4 +197,6 @@ module.exports = {
   deleteAnyTask,
   getActivityLogs,
   getAnalytics,
+  createUser,
+  updateUserPassword,
 };
