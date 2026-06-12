@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getUsersApi, deleteUserApi, updateUserStatusApi } from '../../api/admin';
+import { getUsersApi, deleteUserApi, updateUserStatusApi, createUserApi, updateUserPasswordApi } from '../../api/admin';
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
 import { useAuth } from '../../context/AuthContext';
@@ -11,6 +11,11 @@ const UserManagement = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const { user: currentUser } = useAuth();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'User' });
+  const [newPassword, setNewPassword] = useState('');
 
   const fetchUsers = async () => {
     try {
@@ -54,6 +59,38 @@ const UserManagement = () => {
     }
   };
 
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    try {
+      await createUserApi(formData);
+      showSuccess('User created successfully');
+      setIsCreateModalOpen(false);
+      setFormData({ name: '', email: '', password: '', role: 'User' });
+      fetchUsers();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to create user');
+    }
+  };
+
+  const handleUpdatePassword = async (e) => {
+    e.preventDefault();
+    try {
+      await updateUserPasswordApi(selectedUser._id, newPassword);
+      showSuccess(`Password updated for ${selectedUser.name}`);
+      setIsPasswordModalOpen(false);
+      setNewPassword('');
+      setSelectedUser(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to update password');
+    }
+  };
+
+  const openPasswordModal = (user) => {
+    setSelectedUser(user);
+    setNewPassword('');
+    setIsPasswordModalOpen(true);
+  };
+
   return (
     <div className={`app-layout ${collapsed ? 'app-layout--collapsed' : ''}`}>
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
@@ -65,8 +102,13 @@ const UserManagement = () => {
 
           <div className="card">
             <div className="card__header">
-              <h2 className="card__title">All Users</h2>
-              <span className="badge">{users.length} users</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                <h2 className="card__title">All Users</h2>
+                <span className="badge">{users.length} users</span>
+              </div>
+              <button className="btn btn--primary" onClick={() => setIsCreateModalOpen(true)}>
+                + Add User
+              </button>
             </div>
             {loading ? (
               <div className="loading-center"><div className="spinner"></div></div>
@@ -110,6 +152,12 @@ const UserManagement = () => {
                             {u._id !== currentUser?._id && (
                               <>
                                 <button
+                                  className="btn btn--sm btn--primary"
+                                  onClick={() => openPasswordModal(u)}
+                                >
+                                  🔑 Password
+                                </button>
+                                <button
                                   className={`btn btn--sm ${u.status === 'Active' ? 'btn--warning' : 'btn--success'}`}
                                   onClick={() => handleToggleStatus(u._id, u.status)}
                                 >
@@ -132,6 +180,60 @@ const UserManagement = () => {
               </div>
             )}
           </div>
+
+          {/* Create User Modal */}
+          {isCreateModalOpen && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h2>Add New User</h2>
+                <form onSubmit={handleCreateUser}>
+                  <div className="form-group">
+                    <label>Name</label>
+                    <input type="text" required value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="input-field" />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" required value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="input-field" />
+                  </div>
+                  <div className="form-group">
+                    <label>Password</label>
+                    <input type="password" required minLength="6" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} className="input-field" />
+                  </div>
+                  <div className="form-group">
+                    <label>Role</label>
+                    <select value={formData.role} onChange={(e) => setFormData({...formData, role: e.target.value})} className="input-field">
+                      <option value="User">User</option>
+                      <option value="Admin">Admin</option>
+                    </select>
+                  </div>
+                  <div className="modal-actions">
+                    <button type="button" className="btn btn--secondary" onClick={() => setIsCreateModalOpen(false)}>Cancel</button>
+                    <button type="submit" className="btn btn--primary">Create User</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Edit Password Modal */}
+          {isPasswordModalOpen && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <h2>Edit Password for {selectedUser?.name}</h2>
+                <form onSubmit={handleUpdatePassword}>
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <input type="password" required minLength="6" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="input-field" />
+                  </div>
+                  <div className="modal-actions">
+                    <button type="button" className="btn btn--secondary" onClick={() => setIsPasswordModalOpen(false)}>Cancel</button>
+                    <button type="submit" className="btn btn--primary">Update Password</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
     </div>
